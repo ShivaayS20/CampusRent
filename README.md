@@ -1,50 +1,55 @@
 CampusRent:
-Rent Smarter, Not Harder. CampusRent is a full-stack peer-to-peer rental platform designed for the student community. It enables students to list, discover, and rent essential campus items—such as scientific calculators, lab equipment, and textbooks—directly from their peers, fostering a sustainable campus economy.
-
+Rent Smarter, Not Harder. CampusRent is a full-stack peer-to-peer rental platform designed specifically for the student community. It enables students to list, discover, and rent essential campus items—such as scientific calculators, lab equipment, and textbooks—directly from their peers, fostering a sustainable and cost-effective campus economy.
 
 Core Features:
 1. Secure Authentication & Profile Sync
 Google OAuth: Integrated with Firebase Google Authentication for a seamless, one-tap login experience.
 
-Identity Management: Automatically synchronizes user names and high-resolution Google profile pictures to the dashboard.
+Identity Management: Automatically synchronizes user names and high-resolution profile pictures directly from Google to the personalized dashboard.
 
 2. Interactive Student Dashboard
-Data Visualization: Real-time analytics via Google Charts API, displaying item distribution across categories like Tech, Lab, and Clothing.
+Data Visualization: Real-time inventory analytics via Google Charts API, displaying item distribution across categories like Tech, Lab, and Clothing.
 
-Activity Metrics: Instant tracking of listed items, active rent requests, and total successful rentals.
+Live Metrics: Instant tracking of listed items, active rent requests, and successful rentals to monitor user activity at a glance.
 
-3. Rental Marketplace & discovery
-Dynamic Search: Browse items by specific campus needs with real-time category filtering.
+3. Rental Marketplace & Discovery
+Dynamic Search: Efficiently browse items by specific campus needs with real-time category filtering and search functionality.
 
-Item Transparency: In-depth product pages showing item age, model, price, and precise pickup locations.
+Detailed Info Pages: In-depth product views featuring item specifications, precise pickup locations, and student reviews updated for 2025/2026.
 
-Peer Reviews: A localized review system with student ratings and feedback dated for the 2025/2026 academic year.
+4. Smart Transaction Flow
+Request System: A dedicated flow for submitting rental requests, allowing users to specify duration, purpose, and meeting points.
 
-4. Smart Transaction Management
-Request System: A dedicated flow for submitting rental requests with duration and purpose details.
+Real-time Feedback: The "Rent" button dynamically updates to "Rent Request Sent ✓" upon successful submission to provide instant confirmation.
 
-Real-time Feedback: The "Rent" button dynamically updates to "Rent Request Sent ✓" upon successful submission.
-
-Calendar Integration: Integrated with Google Calendar to allow students to set handover reminders with one tap.
+Scheduling: Integrated with Google Calendar to allow students to set handover reminders with a single click.
 
 
-Full-Stack Tech Stack:
-Frontend: React.js (Hooks & Router), Lucide-React Icons.
+Technical Stack:
+Frontend: React.js (Hooks, Router), Lucide-React Icons.
 
-Backend: Node.js & Express.js (Handling API requests and data flow).
+Backend: Node.js & Express.js (RESTful API architecture).
+
+Database: Centralized data handling via db.js for persistent storage of listings and transactions.
 
 Authentication: Firebase Auth (Google OAuth 2.0).
 
-APIs: Google Charts API, Google Calendar Integration.
-
-Storage: LocalStorage & React State for seamless session persistence.
+APIs: Google Charts API, Google Calendar Scheduling.
 
 
-📥 Quick Start
-Clone the Repo: git clone https://github.com/ShivaayS20/CampusRent.git
+Installation & Setup:
+Frontend
+Bash
 
-Setup Frontend: cd frontend && npm install && npm start
+cd frontend
+npm install
+npm start
+Backend
+Bash
 
-Setup Backend: cd backend && npm install && npm start
+cd backend
+npm install
+npm start
 
-Developed by Shivam Shishodia
+Developer
+Team Bug Busters 
