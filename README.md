@@ -1,6 +1,8 @@
 CampusRent:
 Rent Smarter, Not Harder. CampusRent is a full-stack peer-to-peer rental platform designed specifically for the student community. It enables students to list, discover, and rent essential campus items—such as scientific calculators, lab equipment, and textbooks—directly from their peers, fostering a sustainable and cost-effective campus economy.
 
+
+
 Core Features:
 1. Secure Authentication & Profile Sync
     Google OAuth: Integrated with Firebase Google Authentication for a seamless, one-tap login experience.
@@ -25,7 +27,10 @@ Core Features:
    Scheduling: Integrated with Google Calendar to allow students to set handover reminders with a single click.
 
 
+
+
   Technical Stack:
+  
   Frontend: React.js (Hooks, Router), Lucide-React Icons.
   
   Backend: Node.js & Express.js (RESTful API architecture).
@@ -36,6 +41,8 @@ Core Features:
   
   APIs: Google Charts API, Google Calendar Scheduling.
   
+
+
   
   Installation & Setup:
   Frontend
