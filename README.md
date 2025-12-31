@@ -25,31 +25,31 @@ Core Features:
    Scheduling: Integrated with Google Calendar to allow students to set handover reminders with a single click.
 
 
-      Technical Stack:
-      Frontend: React.js (Hooks, Router), Lucide-React Icons.
-      
-      Backend: Node.js & Express.js (RESTful API architecture).
-      
-      Database: Centralized data handling via db.js for persistent storage of listings and transactions.
-      
-      Authentication: Firebase Auth (Google OAuth 2.0).
-      
-      APIs: Google Charts API, Google Calendar Scheduling.
-      
-      
-      Installation & Setup:
-      Frontend
-      Bash
-      
-      cd frontend
-      npm install
-      npm start
-      Backend
-      Bash
-      
-      cd backend
-      npm install
-      npm start
-      
-      Developer
-      Team Bug Busters 
+  Technical Stack:
+  Frontend: React.js (Hooks, Router), Lucide-React Icons.
+  
+  Backend: Node.js & Express.js (RESTful API architecture).
+  
+  Database: Centralized data handling via db.js for persistent storage of listings and transactions.
+  
+  Authentication: Firebase Auth (Google OAuth 2.0).
+  
+  APIs: Google Charts API, Google Calendar Scheduling.
+  
+  
+  Installation & Setup:
+  Frontend
+  Bash
+  
+  cd frontend
+  npm install
+  npm start
+  Backend
+  Bash
+  
+  cd backend
+  npm install
+  npm start
+  
+  Developer
+  Team Bug Busters 
