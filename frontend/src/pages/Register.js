@@ -18,8 +18,8 @@ const RegistrationPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ EMERGENCY FIX: LocalStorage instead of localhost backend
-  const handleSubmit = (e) => {
+  // 🔽 ONLY THIS FUNCTION IS MODIFIED
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // basic validation
@@ -28,30 +28,39 @@ const RegistrationPage = () => {
       return;
     }
 
-    try {
-      // Create a mock user object to store
-      const mockUser = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        phone: formData.phone,
-        gender: formData.gender,
-        avatar: "https://lh3.googleusercontent.com/a/ACg8ocL...", // Dummy avatar
-      };
+    // Determine API URL based on environment
+    const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
-      // ✅ SAVE TO LOCALSTORAGE
-      // This allows the app to stay logged in on the live Vercel link
-      localStorage.setItem("campusRentUser", JSON.stringify(mockUser));
-      localStorage.setItem("campusRentToken", "mock_token_" + Date.now());
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Registration failed");
+        return;
+      }
+
+      // ✅ SAVE REAL BACKEND DATA
+      localStorage.setItem("campusRentToken", data.token);
+      localStorage.setItem("campusRentUser", JSON.stringify(data.user));
 
       alert("Registration successful!");
-      
-      // Redirect to home/dashboard
       navigate("/");
 
     } catch (error) {
-      console.error("Registration error:", error);
-      alert("Registration failed. Please try again.");
+      alert("Server error. Please try again.");
     }
   };
 
@@ -169,7 +178,7 @@ const RegistrationPage = () => {
   );
 };
 
-// --- STYLES (UNCHANGED) ---
+// --- STYLES ---
 const styles = {
   pageWrapper: {
     minHeight: '100vh',
