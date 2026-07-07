@@ -127,7 +127,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "18px 80px",
+    padding: "10px 80px",
     backgroundColor: "#fff",
     boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
     position: "sticky",

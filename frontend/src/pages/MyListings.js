@@ -48,8 +48,9 @@ const MyListings = () => {
 
   // ✅ SYNC LISTINGS TO LOCALSTORAGE WHENEVER THEY CHANGE
   useEffect(() => {
-    localStorage.setItem('campusRentListings', JSON.stringify(listings));
-  }, [listings]);
+  const listingsWithoutImages = listings.map(({ image, ...rest }) => rest);
+  localStorage.setItem('campusRentListings', JSON.stringify(listingsWithoutImages));
+}, [listings]);
 
   const [notification, setNotification] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);

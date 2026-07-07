@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ const Login = () => {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,10 +32,10 @@ const Login = () => {
         return;
       }
 
-      // ✅ STORE TOKEN
+      // ✅ Store token
       localStorage.setItem("campusRentToken", data.token);
 
-      // ✅ STORE USER (THIS WAS MISSING)
+      // ✅ Store user
       localStorage.setItem("campusRentUser", JSON.stringify(data.user));
 
       setShowSuccess(true);
@@ -48,35 +49,34 @@ const Login = () => {
     }
   };
 
-const handleGoogleLogin = async () => {
-  try {
-    const result = await signInWithPopup(auth, googleProvider);
-    const user = result.user;
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
 
-    const userData = {
-      uid: user.uid,
-      email: user.email,
-      firstName: user.displayName ? user.displayName.split(" ")[0] : "Shivam",
-      lastName: user.displayName ? user.displayName.split(" ")[1] || "" : "",
-      // ✅ Map Google's photoURL to 'avatar' so Profile.js can see it
-      avatar: user.photoURL 
-    };
+      const userData = {
+        uid: user.uid,
+        email: user.email,
+        firstName: user.displayName ? user.displayName.split(" ")[0] : "User",
+        lastName: user.displayName ? user.displayName.split(" ")[1] || "" : "",
+        avatar: user.photoURL
+      };
 
-    localStorage.setItem("campusRentUser", JSON.stringify(userData));
+      localStorage.setItem("campusRentUser", JSON.stringify(userData));
 
-    setShowSuccess(true);
-    setTimeout(() => {
-      navigate("/profile"); // Redirect straight to profile to see the fix
-      window.location.reload(); 
-    }, 800);
+      setShowSuccess(true);
+      setTimeout(() => {
+        navigate("/profile");
+        window.location.reload();
+      }, 800);
 
-  } catch (err) {
-    if (err.code !== "auth/popup-closed-by-user") {
-      console.error(err);
+    } catch (err) {
+      if (err.code !== "auth/popup-closed-by-user") {
+        console.error(err);
+        setError("Google login failed. Try again.");
+      }
     }
-  }
-};
-
+  };
 
   return (
     <div style={styles.container}>
@@ -88,9 +88,7 @@ const handleGoogleLogin = async () => {
 
       <div style={styles.card}>
         <h2 style={styles.title}>Login to CampusRent</h2>
-        <p style={styles.subtitle}>
-          Access your campus rental dashboard
-        </p>
+        <p style={styles.subtitle}>Access your campus rental dashboard</p>
 
         {error && (
           <p style={{ color: "red", fontSize: "13px", textAlign: "center" }}>
@@ -127,28 +125,27 @@ const handleGoogleLogin = async () => {
             Login
           </button>
 
-              <button
-  onClick={handleGoogleLogin}
-  style={{
-    width: "100%",
-    padding: "12px",
-    marginTop: "12px",
-    backgroundColor: "#fff",
-    color: "#000",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    fontWeight: "600",
-    cursor: "pointer",
-  }}
->
-  Continue with Google
-</button>
-
-
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            style={{
+              width: "100%",
+              padding: "12px",
+              marginTop: "12px",
+              backgroundColor: "#fff",
+              color: "#000",
+              border: "1px solid #ccc",
+              borderRadius: "8px",
+              fontWeight: "600",
+              cursor: "pointer",
+            }}
+          >
+            Continue with Google
+          </button>
         </form>
 
         <p style={styles.footerText}>
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <span style={styles.link} onClick={() => navigate("/register")}>
             Register
           </span>
@@ -158,7 +155,6 @@ const handleGoogleLogin = async () => {
   );
 };
 
-/* --- STYLES (UNCHANGED) --- */
 const styles = {
   container: {
     minHeight: "100vh",
@@ -212,6 +208,7 @@ const styles = {
     borderRadius: "8px",
     border: "1px solid #ccc",
     fontSize: "14px",
+    boxSizing: "border-box",
   },
   loginBtn: {
     width: "100%",

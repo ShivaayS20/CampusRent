@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom'; // Hooks for data and navigation
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { CheckCircle, Upload, ChevronRight, Package, MapPin, DollarSign, Image as ImageIcon, Loader2, ArrowLeft } from 'lucide-react';
+
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 const AddItem = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const editData = location.state?.editData; // Check if we are in Edit Mode
+  const editData = location.state?.editData;
 
   const [currentStep, setCurrentStep] = useState(1);
   const [notification, setNotification] = useState("");
-  const [imagePreview, setImagePreview] = useState(editData?.image || null); // Pre-fill image if editing
+  const [imagePreview, setImagePreview] = useState(editData?.image || null);
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Pre-fill form if editData exists
+  const [error, setError] = useState("");
+
   const [formData, setFormData] = useState({
     itemName: editData?.name || '',
     category: editData?.category || 'Tech & Gadgets',
@@ -20,7 +22,7 @@ const AddItem = () => {
     model: editData?.model || '',
     age: editData?.age || '',
     isPaid: editData?.price?.includes('Paid') ? 'Paid' : 'Free',
-    price: editData?.price?.replace(/\D/g, '') || '', // Extract numbers only if editing
+    price: editData?.price?.replace(/\D/g, '') || '',
     duration: editData?.duration || '',
     location: editData?.location || '',
     timing: editData?.timing || '',
@@ -37,48 +39,94 @@ const AddItem = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prev => ({ ...prev, image: file }));
-      // Create a temporary URL so the image can be seen immediately
-      setImagePreview(URL.createObjectURL(file));
+      // Convert to base64 for preview and sending to backend
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setFormData(prev => ({ ...prev, image: reader.result }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const isFormComplete = () => {
     return (
-      formData.itemName !== '' && 
-      formData.type !== '' && 
-      formData.model !== '' && 
-      formData.age !== '' && 
-      formData.location !== '' && 
+      formData.itemName !== '' &&
+      formData.type !== '' &&
+      formData.model !== '' &&
+      formData.age !== '' &&
+      formData.location !== '' &&
       formData.image !== null &&
       (formData.isPaid === 'Free' || formData.price !== '')
     );
   };
 
-  const handlePost = (e) => {
+  const handlePost = async (e) => {
     e.preventDefault();
     if (!isFormComplete()) return;
-    
-    setIsLoading(true);
 
-    // Simulate network delay for loading effect
-    setTimeout(() => {
+    setIsLoading(true);
+    setError("");
+
+    // Get token from localStorage
+    const token = localStorage.getItem("campusRentToken");
+
+    if (!token) {
+      setError("You must be logged in to list an item.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Build payload matching backend Item model
+    const payload = {
+      title: formData.itemName,
+      category: formData.category,
+      description: `Type: ${formData.type} | Model: ${formData.model} | Age: ${formData.age} | Timing: ${formData.timing}`,
+      price: formData.isPaid === 'Free' ? 0 : Number(formData.price),
+      location: formData.location,
+      image: formData.image || "",
+      status: "available",
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/api/items`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Failed to post item.");
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(false);
       setNotification(editData ? "Successfully Updated!" : "Successfully Posted!");
-      
-      // We pass the data back. IMPORTANT: We include imagePreview so the next page can show the image
+
+      // Also update MyListings via navigation state (for local UI update)
       setTimeout(() => {
         if (editData) {
-          navigate('/my-listings', { 
-            state: { updatedItem: { ...formData, id: editData.id, imagePreview } } 
+          navigate('/my-listings', {
+            state: { updatedItem: { ...formData, id: editData.id, imagePreview } }
           });
         } else {
-          navigate('/my-listings', { 
-            state: { newItem: { ...formData, imagePreview } } 
+          navigate('/my-listings', {
+            state: { newItem: { ...formData, imagePreview } }
           });
         }
       }, 1500);
-    }, 1500);
+
+    } catch (err) {
+      console.error(err);
+      setError("Server error. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   const steps = [
@@ -102,7 +150,7 @@ const AddItem = () => {
           <p style={styles.sidebarSubTitle}>
             {editData ? "Update the details of your shared item below" : "Help a fellow student by putting your unused items on rent"}
           </p>
-          
+
           <div style={styles.stepList}>
             {steps.map((step) => (
               <div key={step.id} style={styles.stepItem}>
@@ -123,18 +171,21 @@ const AddItem = () => {
               </div>
             ))}
           </div>
-          
+
           {editData && (
-             <button onClick={() => navigate('/my-listings')} style={styles.cancelBtn}>
-               <ArrowLeft size={14}/> Cancel Editing
-             </button>
+            <button onClick={() => navigate('/my-listings')} style={styles.cancelBtn}>
+              <ArrowLeft size={14} /> Cancel Editing
+            </button>
           )}
         </div>
 
         <div style={styles.formContent}>
           <div style={styles.formInner}>
+            {error && (
+              <p style={{ color: 'red', fontSize: '13px', marginBottom: '10px' }}>{error}</p>
+            )}
             <form onSubmit={handlePost} style={styles.form}>
-              
+
               {currentStep === 1 && (
                 <div style={styles.section}>
                   <h3 style={styles.sectionHeading}>Basic Item Details</h3>
@@ -143,23 +194,23 @@ const AddItem = () => {
                     <input name="itemName" value={formData.itemName} onChange={handleInputChange} type="text" placeholder="e.g. Scientific Calculator" style={styles.input} />
                   </div>
                   <div style={styles.row}>
-                    <div style={{flex: 1}}>
+                    <div style={{ flex: 1 }}>
                       <label style={styles.label}>Category</label>
                       <select name="category" value={formData.category} onChange={handleInputChange} style={styles.input}>
                         {categories.map(cat => <option key={cat}>{cat}</option>)}
                       </select>
                     </div>
-                    <div style={{flex: 1}}>
+                    <div style={{ flex: 1 }}>
                       <label style={styles.label}>Type</label>
                       <input name="type" value={formData.type} onChange={handleInputChange} type="text" placeholder="e.g. Electronics" style={styles.input} />
                     </div>
                   </div>
                   <div style={styles.row}>
-                    <div style={{flex: 1}}>
+                    <div style={{ flex: 1 }}>
                       <label style={styles.label}>Model</label>
                       <input name="model" value={formData.model} onChange={handleInputChange} type="text" placeholder="e.g. TI-84 Plus" style={styles.input} />
                     </div>
-                    <div style={{flex: 1}}>
+                    <div style={{ flex: 1 }}>
                       <label style={styles.label}>Condition / Age</label>
                       <input name="age" value={formData.age} onChange={handleInputChange} type="text" placeholder="e.g. 1 year old" style={styles.input} />
                     </div>
@@ -182,11 +233,11 @@ const AddItem = () => {
                     </div>
                   </div>
                   <div style={styles.row}>
-                    <div style={{flex: 1}}>
+                    <div style={{ flex: 1 }}>
                       <label style={styles.label}>Price (per day)</label>
                       <input name="price" value={formData.price} onChange={handleInputChange} type="number" placeholder="₹ 0.00" style={styles.input} disabled={formData.isPaid === 'Free'} />
                     </div>
-                    <div style={{flex: 1}}>
+                    <div style={{ flex: 1 }}>
                       <label style={styles.label}>Max Duration</label>
                       <input name="duration" value={formData.duration} onChange={handleInputChange} type="text" placeholder="e.g. 7 days" style={styles.input} />
                     </div>
@@ -217,13 +268,13 @@ const AddItem = () => {
                     ) : (
                       <>
                         <Upload size={40} color="#94a3b8" />
-                        <p style={{marginTop: '10px', color: '#64748b'}}>Click to upload item image</p>
+                        <p style={{ marginTop: '10px', color: '#64748b' }}>Click to upload item image</p>
                       </>
                     )}
                     <input type="file" style={styles.fileInput} onChange={handleImageChange} accept="image/*" />
                   </div>
                   {imagePreview && (
-                    <button type="button" onClick={() => {setImagePreview(null); setFormData({...formData, image: null})}} style={styles.removeBtn}>
+                    <button type="button" onClick={() => { setImagePreview(null); setFormData({ ...formData, image: null }); }} style={styles.removeBtn}>
                       Remove and change image
                     </button>
                   )}
@@ -236,14 +287,14 @@ const AddItem = () => {
                     Back
                   </button>
                 )}
-                <div style={{marginLeft: 'auto'}}>
+                <div style={{ marginLeft: 'auto' }}>
                   {currentStep < 4 ? (
                     <button type="button" onClick={() => setCurrentStep(currentStep + 1)} style={styles.nextButton}>
                       Next Step <ChevronRight size={18} />
                     </button>
                   ) : (
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       style={{
                         ...styles.submitButton,
                         opacity: (isFormComplete() && !isLoading) ? 1 : 0.5,
@@ -302,7 +353,6 @@ const styles = {
   spinner: { animation: 'spin 1s linear infinite' },
 };
 
-// CSS for spinner animation
 if (typeof document !== 'undefined') {
   const styleSheet = document.createElement("style");
   styleSheet.innerText = `@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;

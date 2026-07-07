@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
+import ScrollToTop from "./components/ScrollToTop";
+
 import LandingPage from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -7,14 +9,14 @@ import RentalMarket from "./pages/RentalMarket";
 import AddItem from "./pages/AddItem";
 import MyListings from "./pages/MyListings";
 import RentRequests from "./pages/RentRequests";
-import Profile from "./pages/Profile.js";
-import ContactUs from "./pages/contactUs.js";
-
-
+import Profile from "./pages/Profile";
+import ContactUs from "./pages/contactUs";
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
+
       <Routes>
         <Route element={<Layout />}>
           {/* Landing page */}
@@ -23,20 +25,17 @@ function App() {
           {/* Auth pages */}
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
+
+          {/* Main pages */}
           <Route path="market" element={<RentalMarket />} />
           <Route path="add-item" element={<AddItem />} />
           <Route path="my-listings" element={<MyListings />} />
-          <Route path="rent-request" element={<RentRequests/>} />
-          <Route path="profile" element={<Profile/>} />
+          <Route path="rent-request" element={<RentRequests />} />
+          <Route path="profile" element={<Profile />} />
           <Route path="contactus" element={<ContactUs />} />
-         
-
-
-
         </Route>
       </Routes>
     </BrowserRouter>
-    
   );
 }
 
