@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [, setUser] = useState(null);
   const [visible, setVisible] = useState(false);
   const [countDone, setCountDone] = useState(false);
   const [counts, setCounts] = useState({ items: 0, students: 0, saved: 0 });

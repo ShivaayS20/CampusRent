@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, X, Star, MapPin, CheckCircle, Loader2, ChevronDown, Shield, Truck, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, X, Star, CheckCircle, Loader2, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
 

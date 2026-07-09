@@ -5,11 +5,10 @@ import {
 } from 'lucide-react';
 
 const ORANGE = '#ff6b35';
-const ORANGE2 = '#f7931e';
 const DARK = '#0F172A';
 
 const RentRequests = () => {
-  const [myRequests, setMyRequests] = useState([
+  const [myRequests] = useState([
     {
       id: 101,
       name: "DSLR Camera",
